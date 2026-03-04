@@ -1,0 +1,466 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+    --bg-color: #FFD1DC;
+    --accent-pink: #F8BBD0;
+    --accent-lilac: #E1BEE7;
+    --accent-mint: #C8E6C9;
+    --white: #FFFFFF;
+    --text-color: #5D4037;
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --glass: rgba(255, 255, 255, 0.7);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.4) 0%, transparent 40%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+/* ==================== GAME CONTAINER ==================== */
+#game-container {
+    width: 100%;
+    max-width: 450px;
+    height: 100%;
+    max-height: 850px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 8px solid var(--white);
+    border-radius: 40px;
+    position: relative;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* ==================== STATUS BARS ==================== */
+.status-area {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 10px;
+    gap: 10px;
+    z-index: 5;
+}
+
+.status-item {
+    flex: 1;
+    background: var(--white);
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.status-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.bar-container {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.bar-hunger {
+    background: linear-gradient(90deg, #FFAB91, #FF7043);
+}
+
+.bar-hygiene {
+    background: linear-gradient(90deg, #81D4FA, #29B6F6);
+}
+
+.bar-happiness {
+    background: linear-gradient(90deg, #FFF59D, #FFD54F);
+}
+
+/* ==================== PET AREA ==================== */
+.pet-area {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#pet {
+    width: 220px;
+    height: 220px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 10;
+    position: relative;
+    /* Anchor for accessory */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#pet img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    /* Prevent image ghost drag */
+}
+
+/* Accessory ON THE PET */
+.pet-accessory {
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    font-size: 2.5rem;
+    z-index: 20;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    transition: all 0.3s ease;
+}
+
+.pet-idle {
+    animation: breathe 3s infinite ease-in-out;
+}
+
+@keyframes breathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.04) translateY(-3px);
+    }
+}
+
+.pet-jump {
+    animation: jump 0.5s ease-out;
+}
+
+@keyframes jump {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-35px) scale(1.05);
+    }
+}
+
+/* ==================== DIRT OVERLAY ==================== */
+.dirt-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 230px;
+    height: 230px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 11;
+}
+
+.dirt-spot {
+    position: absolute;
+    background: rgba(139, 94, 60, 0.35);
+    border-radius: 50%;
+    filter: blur(4px);
+}
+
+/* ==================== CONTROLS ==================== */
+.controls-area {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    z-index: 5;
+}
+
+.control-btn {
+    width: 70px;
+    height: 70px;
+    background: var(--white);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.control-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.control-btn:active {
+    transform: scale(0.92);
+}
+
+.control-btn.active-tool {
+    background: var(--accent-pink);
+    box-shadow: 0 0 20px rgba(248, 187, 208, 0.6);
+}
+
+/* ==================== FOOD SUB-MENU ==================== */
+.menu-container {
+    position: relative;
+}
+
+.sub-menu {
+    position: absolute;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--white);
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    gap: 10px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 200;
+}
+
+.sub-menu.active {
+    transform: translateX(-50%) scale(1);
+}
+
+.food-opt {
+    width: 55px;
+    height: 55px;
+    border: 3px solid transparent;
+    background: var(--accent-pink);
+    border-radius: 18px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.food-opt:hover {
+    transform: scale(1.15);
+}
+
+.food-opt.selected-food {
+    border-color: #E91E63;
+    background: #FCE4EC;
+}
+
+/* ==================== EMOJI DRAG CURSOR (NO WHITE BG!) ==================== */
+.drag-cursor {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    z-index: 9999;
+    pointer-events: none;
+    display: none;
+    font-size: 2.8rem;
+    text-align: center;
+    line-height: 60px;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.25));
+    transition: transform 0.05s linear;
+}
+
+/* ==================== FX: BUBBLES, HEARTS ==================== */
+.fx-container {
+    position: absolute;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 50;
+}
+
+.bubble {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    border: 2px solid rgba(129, 212, 250, 0.6);
+    animation: floatUp 1.2s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-60px) scale(1.4);
+        opacity: 0;
+    }
+}
+
+.heart-fx {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: heartFloat 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes heartFloat {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-80px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* ==================== SELECTION & WARDROBE OVERLAYS ==================== */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    background-image:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(225, 190, 231, 0.3) 0%, transparent 50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 32px;
+    padding: 20px;
+    text-align: center;
+}
+
+.overlay h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--text-color);
+}
+
+.pet-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.pet-option {
+    background: var(--white);
+    padding: 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+    border: 4px solid transparent;
+}
+
+.pet-option:hover {
+    transform: scale(1.05);
+}
+
+.pet-option.selected {
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 15px rgba(248, 187, 208, 0.5);
+}
+
+.pet-option img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+}
+
+.pet-option span {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Wardrobe Grid */
+.wardrobe-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.wardrobe-item {
+    width: 80px;
+    height: 80px;
+    background: var(--white);
+    border: 4px solid transparent;
+    border-radius: 20px;
+    font-size: 2.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.wardrobe-item:hover {
+    transform: scale(1.1);
+}
+
+.wardrobe-item.equipped {
+    border-color: #E91E63;
+    background: #FCE4EC;
+}
+
+.main-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: var(--white);
+    color: var(--text-color);
+    border: none;
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.main-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.main-btn:active {
+    transform: scale(0.95);
+}
