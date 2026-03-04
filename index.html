@@ -14,17 +14,17 @@
         <div id="selection-screen" class="overlay">
             <h1>Escolha seu Pet 🌸</h1>
             <div class="pet-options">
-                <div class="pet-option" data-color="pink">
-                    <img src="assets/pet_idle.png" alt="Pink Pet" draggable="false">
+                <div class="pet-option" data-emoji="🐼">
+                    <div class="pet-preview">🐼</div>
+                    <span>Pandi</span>
+                </div>
+                <div class="pet-option" data-emoji="🦊">
+                    <div class="pet-preview">🦊</div>
+                    <span>Foxy</span>
+                </div>
+                <div class="pet-option" data-emoji="🐱">
+                    <div class="pet-preview">🐱</div>
                     <span>Mimi</span>
-                </div>
-                <div class="pet-option" data-color="lilac" style="filter: hue-rotate(280deg);">
-                    <img src="assets/pet_idle.png" alt="Lilac Pet" draggable="false">
-                    <span>Lulu</span>
-                </div>
-                <div class="pet-option" data-color="mint" style="filter: hue-rotate(150deg);">
-                    <img src="assets/pet_idle.png" alt="Mint Pet" draggable="false">
-                    <span>Menta</span>
                 </div>
             </div>
             <button id="start-game" class="main-btn">Começar!</button>
@@ -42,6 +42,16 @@
                 <button class="wardrobe-item" data-acc="none">❌</button>
             </div>
             <button id="close-wardrobe" class="main-btn">Voltar</button>
+        </div>
+
+        <!-- Minigame Screen -->
+        <div id="minigame-screen" class="overlay" style="display: none;">
+            <h1>Donut Run! 🍩</h1>
+            <canvas id="minigame-canvas" width="400" height="600"></canvas>
+            <div id="minigame-hud">
+                <span id="mg-score">🍩 0</span>
+                <button id="mg-quit" class="main-btn mini-btn">Voltar</button>
+            </div>
         </div>
 
         <!-- Status Bars -->
@@ -67,14 +77,14 @@
         </div>
 
         <!-- Pet Interaction Area -->
-        <div class="pet-area">
+        <div class="pet-area" id="pet-area">
             <div id="dirt-overlay" class="dirt-overlay"></div>
             <div id="pet" class="pet-idle">
-                <img id="pet-img" src="assets/pet_idle.png" alt="Kawaii Pet" draggable="false">
-                <!-- Accessory rendered ON the pet -->
+                <div class="pet-bg-circle"></div>
+                <div id="pet-emoji">🐼</div>
                 <div id="pet-accessory" class="pet-accessory"></div>
             </div>
-            <div id="hearts-container" class="fx-container"></div>
+            <div id="fx-container" class="fx-container"></div>
         </div>
 
         <!-- Controls Area -->
@@ -88,11 +98,12 @@
                 </div>
             </div>
             <button id="btn-bath" class="control-btn" title="Banho">🛁</button>
+            <button id="btn-minigame" class="control-btn" title="Minigame">🎮</button>
             <button id="btn-shop" class="control-btn" title="Acessório">🎀</button>
         </div>
     </div>
 
-    <!-- Emoji-based Drag Cursor (NO IMAGES = NO WHITE BG) -->
+    <!-- Emoji drag cursor -->
     <div id="drag-cursor" class="drag-cursor"></div>
 
     <script src="script.js"></script>

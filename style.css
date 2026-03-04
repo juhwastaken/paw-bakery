@@ -119,33 +119,43 @@ body {
     transition: transform 0.2s;
     z-index: 10;
     position: relative;
-    /* Anchor for accessory */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#pet img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-    /* Prevent image ghost drag */
+/* CIRCULAR PINK BACKGROUND — hides the white corners */
+.pet-bg-circle {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    z-index: 0;
 }
 
-/* Accessory ON THE PET */
+#pet-emoji {
+    font-size: 8rem;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* ACCESSORY — positioned on the pet's head/ear area */
 .pet-accessory {
     position: absolute;
-    top: -5px;
-    right: 10px;
-    font-size: 2.5rem;
+    top: 5%;
+    right: 15%;
+    font-size: 2rem;
     z-index: 20;
     pointer-events: none;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    transform-origin: center;
     transition: all 0.3s ease;
 }
 
+/* ==================== ANIMATIONS ==================== */
 .pet-idle {
     animation: breathe 3s infinite ease-in-out;
 }
@@ -178,6 +188,32 @@ body {
     }
 }
 
+.pet-eating {
+    animation: eating 0.4s ease-in-out;
+}
+
+@keyframes eating {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.08) rotate(-3deg);
+    }
+
+    50% {
+        transform: scale(0.95) rotate(3deg);
+    }
+
+    75% {
+        transform: scale(1.06) rotate(-2deg);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 /* ==================== DIRT OVERLAY ==================== */
 .dirt-overlay {
     position: absolute;
@@ -204,19 +240,19 @@ body {
     padding: 15px;
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     z-index: 5;
 }
 
 .control-btn {
-    width: 70px;
-    height: 70px;
+    width: 65px;
+    height: 65px;
     background: var(--white);
     border-radius: 50%;
     border: none;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    font-size: 2rem;
+    font-size: 1.8rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -244,7 +280,7 @@ body {
 
 .sub-menu {
     position: absolute;
-    bottom: 85px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%) scale(0);
     background: var(--white);
@@ -284,7 +320,7 @@ body {
     background: #FCE4EC;
 }
 
-/* ==================== EMOJI DRAG CURSOR (NO WHITE BG!) ==================== */
+/* ==================== EMOJI DRAG CURSOR ==================== */
 .drag-cursor {
     position: fixed;
     width: 60px;
@@ -296,10 +332,9 @@ body {
     text-align: center;
     line-height: 60px;
     filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.25));
-    transition: transform 0.05s linear;
 }
 
-/* ==================== FX: BUBBLES, HEARTS ==================== */
+/* ==================== FX ==================== */
 .fx-container {
     position: absolute;
     pointer-events: none;
@@ -349,7 +384,31 @@ body {
     }
 }
 
-/* ==================== SELECTION & WARDROBE OVERLAYS ==================== */
+.food-pop {
+    position: absolute;
+    font-size: 2rem;
+    animation: foodPop 0.8s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes foodPop {
+    0% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4) translateY(-30px);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(0.5) translateY(-60px);
+        opacity: 0;
+    }
+}
+
+/* ==================== OVERLAYS ==================== */
 .overlay {
     position: absolute;
     top: 0;
@@ -372,7 +431,7 @@ body {
 
 .overlay h1 {
     font-size: 2rem;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     color: var(--text-color);
 }
 
@@ -397,14 +456,28 @@ body {
 }
 
 .pet-option.selected {
-    border-color: var(--accent-pink);
     box-shadow: 0 0 15px rgba(248, 187, 208, 0.5);
 }
 
-.pet-option img {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
+.pet-preview {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    margin: 0 auto 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-size: 3rem;
+}
+
+.pet-preview.lilac {
+    background: var(--accent-lilac);
+}
+
+.pet-preview.mint {
+    background: var(--accent-mint);
 }
 
 .pet-option span {
@@ -413,7 +486,7 @@ body {
     font-weight: 600;
 }
 
-/* Wardrobe Grid */
+/* Wardrobe */
 .wardrobe-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -463,4 +536,33 @@ body {
 
 .main-btn:active {
     transform: scale(0.95);
+}
+
+.mini-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+}
+
+/* ==================== MINIGAME ==================== */
+#minigame-canvas {
+    border-radius: 20px;
+    background: #1a1a2e;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    max-width: 100%;
+}
+
+#minigame-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 15px;
+    padding: 0 10px;
+}
+
+#mg-score {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-color);
 }
