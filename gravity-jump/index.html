@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity Jump</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Main Game Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- UI Overlays -->
+        <div id="hud" class="overlay hidden">
+            <div id="phase-display">Phase: <span>1</span></div>
+            <div id="score-display">Score: <span>0</span></div>
+            <div id="time-display">Time: <span>0</span>s</div>
+        </div>
+
+        <!-- Start Menu Scene -->
+        <div id="menu-scene" class="overlay scene active">
+            <h1>Gravity Jump</h1>
+            <p>Espaço : Pular</p>
+            <p>G : Inverter Gravidade</p>
+            <button id="btn-start" class="btn">Jogar</button>
+        </div>
+
+        <!-- Phase Transition Scene -->
+        <div id="phase-scene" class="overlay scene hidden">
+            <h1 id="phase-title">Phase 1 Clear!</h1>
+            <div class="button-group">
+                <button id="btn-continue" class="btn">Continuar</button>
+                <button id="btn-quit" class="btn btn-secondary">Sair</button>
+            </div>
+        </div>
+
+        <!-- Game Over Scene -->
+        <div id="gameover-scene" class="overlay scene hidden">
+            <h1>Game Over!</h1>
+            <p>Score Final: <span id="final-score">0</span></p>
+            <p>Tempo: <span id="final-time">0</span>s</p>
+            <button id="btn-restart" class="btn">Tentar Novamente</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/player/player.js"></script>
+    <script src="scripts/gravity/gravity.js"></script>
+    <script src="scripts/score/score.js"></script>
+    <script src="scripts/platforms/platform.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
