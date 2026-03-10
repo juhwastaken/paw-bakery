@@ -196,17 +196,37 @@ function drawPlatforms(ctx) {
                 ctx.shadowBlur = 15;
                 ctx.shadowColor = '#ff007f';
                 ctx.fillStyle = '#ff007f'; // Neon pink
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+                
+                // Inner core for neon look
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(obs.x + 4, obs.y + 4, obs.width - 8, obs.height - 8);
             } else if (obs.type === 'enemy') {
                 ctx.shadowBlur = 20;
                 ctx.shadowColor = '#ff3300';
                 ctx.fillStyle = '#ff3300'; // Neon hot orange for enemies
+                
+                // Draw as a diamond/mid-air spike
+                ctx.beginPath();
+                ctx.moveTo(obs.x + obs.width / 2, obs.y); // Top
+                ctx.lineTo(obs.x + obs.width, obs.y + obs.height / 2); // Right
+                ctx.lineTo(obs.x + obs.width / 2, obs.y + obs.height); // Bottom
+                ctx.lineTo(obs.x, obs.y + obs.height / 2); // Left
+                ctx.closePath();
+                ctx.fill();
+                
+                // Inner core for neon look
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(obs.x + obs.width / 2, obs.y + 6);
+                ctx.lineTo(obs.x + obs.width - 6, obs.y + obs.height / 2);
+                ctx.lineTo(obs.x + obs.width / 2, obs.y + obs.height - 6);
+                ctx.lineTo(obs.x + 6, obs.y + obs.height / 2);
+                ctx.closePath();
+                ctx.fill();
             }
-            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-            
-            // Inner core for neon look
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(obs.x + 4, obs.y + 4, obs.width - 8, obs.height - 8);
         }
     }
     
