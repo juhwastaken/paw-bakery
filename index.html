@@ -10,20 +10,23 @@
 
 <body>
     <div id="game-container">
+        <!-- Room Decor Background (Now an image) -->
+        <div id="room-bg"></div>
+
         <!-- Selection Screen -->
         <div id="selection-screen" class="overlay">
             <h1>Escolha seu Pet 🌸</h1>
             <div class="pet-options">
-                <div class="pet-option" data-emoji="🐼">
-                    <div class="pet-preview">🐼</div>
+                <div class="pet-option" data-pet="pandi">
+                    <img class="pet-preview-img" src="assets/pandi.png" alt="Pandi">
                     <span>Pandi</span>
                 </div>
-                <div class="pet-option" data-emoji="🦊">
-                    <div class="pet-preview">🦊</div>
+                <div class="pet-option" data-pet="foxy">
+                    <img class="pet-preview-img" src="assets/foxy.png" alt="Foxy">
                     <span>Foxy</span>
                 </div>
-                <div class="pet-option" data-emoji="🐱">
-                    <div class="pet-preview">🐱</div>
+                <div class="pet-option" data-pet="mimi">
+                    <img class="pet-preview-img" src="assets/mimi.png" alt="Mimi">
                     <span>Mimi</span>
                 </div>
             </div>
@@ -34,12 +37,30 @@
         <div id="wardrobe-screen" class="overlay" style="display: none;">
             <h1>Acessórios 🎀</h1>
             <div class="wardrobe-grid">
-                <button class="wardrobe-item" data-acc="bow">🎀</button>
-                <button class="wardrobe-item" data-acc="crown">👑</button>
-                <button class="wardrobe-item" data-acc="flower">🌸</button>
-                <button class="wardrobe-item" data-acc="hat">🎩</button>
-                <button class="wardrobe-item" data-acc="star">⭐</button>
-                <button class="wardrobe-item" data-acc="none">❌</button>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="bow" data-price="0">🎀</button>
+                    <span class="price-tag">Grátis</span>
+                </div>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="crown" data-price="30">👑</button>
+                    <span class="price-tag">🪙 30</span>
+                </div>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="flower" data-price="15">🌸</button>
+                    <span class="price-tag">🪙 15</span>
+                </div>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="hat" data-price="50">🎩</button>
+                    <span class="price-tag">🪙 50</span>
+                </div>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="star" data-price="25">⭐</button>
+                    <span class="price-tag">🪙 25</span>
+                </div>
+                <div class="wardrobe-item-box">
+                    <button class="wardrobe-item" data-acc="none">❌</button>
+                    <span class="price-tag">-</span>
+                </div>
             </div>
             <button id="close-wardrobe" class="main-btn">Voltar</button>
         </div>
@@ -75,13 +96,16 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Coin HUD -->
+        <div id="coin-hud">🪙 <span id="coin-count">50</span></div>
+
 
         <!-- Pet Interaction Area -->
         <div class="pet-area" id="pet-area">
             <div id="dirt-overlay" class="dirt-overlay"></div>
             <div id="pet" class="pet-idle">
-                <div class="pet-bg-circle"></div>
-                <div id="pet-emoji">🐼</div>
+                <img id="pet-img" src="assets/pandi.png" alt="Pet">
                 <div id="pet-accessory" class="pet-accessory"></div>
             </div>
             <div id="fx-container" class="fx-container"></div>
@@ -95,6 +119,9 @@
                     <button class="food-opt" data-emoji="🍓">🍓</button>
                     <button class="food-opt" data-emoji="🧁">🧁</button>
                     <button class="food-opt" data-emoji="🥛">🥛</button>
+                    <button class="food-opt" data-emoji="🍩">🍩</button>
+                    <button class="food-opt" data-emoji="🍪">🍪</button>
+                    <button class="food-opt" data-emoji="🥞">🥞</button>
                 </div>
             </div>
             <button id="btn-bath" class="control-btn" title="Banho">🛁</button>

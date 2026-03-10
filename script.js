@@ -12,11 +12,46 @@ const petState = {
     activeTool: null,
     activeEmoji: '🍓',
     petModel: '🐼',
-    accessory: null
+    accessory: null,
+    accessoryPos: { top: '5%', right: '15%' },
+    ownedAccessories: ['none'],
+    highScore: 0
 };
 
+// ==================== PERSISTENCE ====================
+function saveGame() {
+    const data = {
+        hunger: petState.hunger,
+        hygiene: petState.hygiene,
+        happiness: petState.happiness,
+        coins: petState.coins,
+        petModel: petState.petModel,
+        accessory: petState.accessory,
+        ownedAccessories: petState.ownedAccessories,
+        highScore: petState.highScore,
+        accessoryPos: petState.accessoryPos
+    };
+    localStorage.setItem('pawBakery_save', JSON.stringify(data));
+}
+
+function loadGame() {
+    const saved = localStorage.getItem('pawBakery_save');
+    if (saved) {
+        const data = JSON.parse(saved);
+        Object.assign(petState, data);
+        updateBars();
+        applyPetModel(petState.petModel);
+        if (petState.accessory) {
+            petAccessory.textContent = petState.accessory;
+            petAccessory.style.top = petState.accessoryPos.top;
+            petAccessory.style.right = petState.accessoryPos.right;
+            petAccessory.style.left = petState.accessoryPos.left || 'auto';
+        }
+    }
+}
+
 // ==================== DOM ====================
-const petEmojiDisplay = document.getElementById('pet-emoji');
+const petImgDisplay = document.getElementById('pet-img');
 const petContainer = document.getElementById('pet');
 const petAccessory = document.getElementById('pet-accessory');
 const selectionScreen = document.getElementById('selection-screen');
@@ -40,16 +75,22 @@ const btnMinigame = document.getElementById('btn-minigame');
 const foodMenu = document.getElementById('food-menu');
 const foodOpts = document.querySelectorAll('.food-opt');
 const dragCursor = document.getElementById('drag-cursor');
+const coinCountDisplay = document.getElementById('coin-count');
 
 let eatingTimeout = null;
 
 // ==================== INIT ====================
 function init() {
+    loadGame();
     updateBars();
+    updateCoinHUD();
     setupSelection();
     setupWardrobe();
     setupInteractions();
-    setInterval(decayStats, 5000);
+    setInterval(() => {
+        decayStats();
+        saveGame();
+    }, 5000);
     document.addEventListener('dragstart', e => e.preventDefault());
 }
 
@@ -59,7 +100,7 @@ function setupSelection() {
         opt.addEventListener('click', () => {
             petOptions.forEach(o => o.classList.remove('selected'));
             opt.classList.add('selected');
-            petState.petModel = opt.dataset.emoji;
+            petState.petModel = opt.dataset.pet;
             applyPetModel(petState.petModel);
         });
     });
@@ -67,7 +108,7 @@ function setupSelection() {
     startBtn.addEventListener('click', () => {
         if (!document.querySelector('.pet-option.selected')) {
             petOptions[0].classList.add('selected');
-            petState.petModel = '🐼';
+            petState.petModel = 'pandi';
         }
         selectionScreen.style.display = 'none';
 
@@ -77,8 +118,8 @@ function setupSelection() {
 }
 
 function applyPetModel(model) {
-    if (petEmojiDisplay) {
-        petEmojiDisplay.textContent = model;
+    if (petImgDisplay) {
+        petImgDisplay.src = `assets/${model}.png`;
     }
 }
 
@@ -86,15 +127,34 @@ function applyPetModel(model) {
 function setupWardrobe() {
     wardrobeItems.forEach(item => {
         item.addEventListener('click', () => {
-            wardrobeItems.forEach(i => i.classList.remove('equipped'));
             const acc = item.dataset.acc;
+            const price = parseInt(item.dataset.price || 0);
+
             if (acc === 'none') {
                 petState.accessory = null;
                 petAccessory.textContent = '';
-            } else {
+                wardrobeItems.forEach(i => i.classList.remove('equipped'));
+            } else if (petState.ownedAccessories.includes(acc)) {
+                // Already owned, just equip
+                wardrobeItems.forEach(i => i.classList.remove('equipped'));
                 item.classList.add('equipped');
                 petState.accessory = item.textContent;
                 petAccessory.textContent = petState.accessory;
+            } else if (petState.coins >= price) {
+                // Buy it
+                petState.coins -= price;
+                petState.ownedAccessories.push(acc);
+                wardrobeItems.forEach(i => i.classList.remove('equipped'));
+                item.classList.add('equipped');
+                petState.accessory = item.textContent;
+                petAccessory.textContent = petState.accessory;
+                updateCoinHUD();
+                sounds.buy();
+                saveGame();
+            } else {
+                // Can't afford
+                item.style.animation = 'shake 0.3s';
+                setTimeout(() => item.style.animation = '', 300);
             }
         });
     });
@@ -102,6 +162,37 @@ function setupWardrobe() {
     closeWardrobeBtn.addEventListener('click', () => {
         wardrobeScreen.style.display = 'none';
     });
+}
+
+function updateCoinHUD() {
+    if (coinCountDisplay) coinCountDisplay.textContent = petState.coins;
+}
+
+// ==================== AUDIO ====================
+const sounds = {
+    eat: () => playTone(300, 0.1, 'sine'),
+    wash: () => playTone(600, 0.05, 'triangle'),
+    jump: () => playTone(400, 0.2, 'square'),
+    buy: () => playTone(800, 0.1, 'sine'),
+    coin: () => playTone(1200, 0.1, 'sine'),
+    hit: () => playTone(150, 0.3, 'sawtooth'),
+    click: () => playTone(500, 0.05, 'sine')
+};
+
+function playTone(freq, dur, type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + dur);
+    } catch(e) { console.log('Audio blocked'); }
 }
 
 // ==================== BARS ====================
@@ -150,6 +241,7 @@ function setupInteractions() {
     petContainer.addEventListener('click', () => {
         if (!petState.activeTool) {
             petState.happiness = Math.min(100, petState.happiness + 5);
+            sounds.jump();
             jumpPet();
             spawnHearts();
             updateBars();
@@ -193,12 +285,48 @@ function setupInteractions() {
         startMinigame();
     });
 
-    // Mouse tracking
+    // Dragging Accessory
+    let isDragging = false;
+    let dragOffset = { x: 0, y: 0 };
+    
+    petAccessory.addEventListener('mousedown', (e) => {
+        if (!petState.accessory) return;
+        isDragging = true;
+        const rect = petAccessory.getBoundingClientRect();
+        dragOffset.x = e.clientX - rect.left;
+        dragOffset.y = e.clientY - rect.top;
+        e.stopPropagation();
+    });
+
     document.addEventListener('mousemove', (e) => {
-        if (petState.activeTool) {
+        if (isDragging) {
+            const petContainer = document.getElementById('pet');
+            const parent = petContainer.getBoundingClientRect();
+            
+            // Mouse position relative to #pet, minus the grab offset
+            // We use standard pixels here. CSS will interpret as px.
+            let x = e.clientX - parent.left - dragOffset.x;
+            let y = e.clientY - parent.top - dragOffset.y;
+            
+            // If the pet is scaled during breathing animation, dividing by the scale factor could be more accurate,
+            // but for simplicity and since the scale is small (1.04), we can just set it directly.
+            
+            petAccessory.style.left = `${x}px`;
+            petAccessory.style.top = `${y}px`;
+            petAccessory.style.right = 'auto';
+            
+            petState.accessoryPos = { top: petAccessory.style.top, left: petAccessory.style.left };
+        } else if (petState.activeTool) {
             dragCursor.style.left = `${e.clientX - 30}px`;
             dragCursor.style.top = `${e.clientY - 30}px`;
             checkInteraction(e.clientX, e.clientY);
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            saveGame();
         }
     });
 
@@ -246,6 +374,7 @@ function checkInteraction(x, y) {
 function feedPet(x, y) {
     if (petState.hunger < 100) {
         petState.hunger = Math.min(100, petState.hunger + 0.3);
+        sounds.eat();
 
         // Eating animation
         if (!eatingTimeout) {
@@ -279,6 +408,7 @@ function feedPet(x, y) {
 function washPet(x, y) {
     if (petState.hygiene < 100) {
         petState.hygiene = Math.min(100, petState.hygiene + 0.4);
+        sounds.wash();
         createBubble(x, y);
         updateBars();
     }
@@ -352,20 +482,23 @@ function startMinigame() {
     let difficultyScore = 0; // Tracks game speed increment
 
     // Generate initial platforms
-    for (let i = 0; i < 15; i++) {
+    // First platform under player
+    platforms.push({ x: W / 2 - 40, y: H - 100, w: 80, h: 12 });
+    
+    for (let i = 1; i < 15; i++) {
         platforms.push({
             x: Math.random() * (W - 80),
-            y: H - 100 - i * 45,
-            w: 70 + Math.random() * 40,
+            y: H - 100 - i * 60, // Fixed gap at start
+            w: 80,
             h: 12
         });
     }
 
-    // Place donuts/bombs on some platforms
+    // Place donuts/bombs on some platforms (starting from higher ones)
     platforms.forEach((p, i) => {
-        if (i > 0 && Math.random() > 0.4) {
+        if (i > 2 && Math.random() > 0.4) {
             items.push({ x: p.x + p.w / 2 - 10, y: p.y - 25, w: 20, h: 20, type: 'donut', collected: false });
-        } else if (i > 3 && Math.random() > 0.8) {
+        } else if (i > 5 && Math.random() > 0.8) {
             items.push({ x: p.x + p.w / 2 - 10, y: p.y - 25, w: 20, h: 20, type: 'bomb', collected: false });
         }
     });
@@ -442,11 +575,22 @@ function startMinigame() {
                 it.collected = true;
                 if (it.type === 'donut') {
                     score++;
-                    difficultyScore = Math.floor(score / 5); // Difficulty up every 5 donuts
+                    sounds.coin();
+                    difficultyScore = Math.floor(score / 5);
                     document.getElementById('mg-score').textContent = `🍩 ${score}`;
                 } else if (it.type === 'bomb') {
-                    gameOver = true; // Bomb ends the game!
+                    gameOver = true;
+                    sounds.hit();
                 }
+            }
+        }
+        
+        // Final score check
+        if (gameOver || player.y > H + 50) {
+            gameOver = true;
+            if (score > petState.highScore) {
+                petState.highScore = score;
+                saveGame();
             }
         }
 
@@ -536,10 +680,13 @@ function startMinigame() {
             ctx.fillStyle = '#FFD1DC';
             ctx.font = '800 28px Outfit';
             ctx.textAlign = 'center';
-            ctx.fillText('Game Over!', W / 2, H / 2 - 20);
+            ctx.fillText('Game Over!', W / 2, H / 2 - 40);
             ctx.font = '600 20px Outfit';
-            ctx.fillText(`🍩 ${score} donuts!`, W / 2, H / 2 + 20);
-            ctx.fillText('Clique "Voltar"', W / 2, H / 2 + 55);
+            ctx.fillText(`🍩 ${score} donuts!`, W / 2, H / 2);
+            ctx.fillStyle = '#FFF59D';
+            ctx.fillText(`Recorde: ${petState.highScore}`, W / 2, H / 2 + 30);
+            ctx.fillStyle = '#FFD1DC';
+            ctx.fillText('Clique "Voltar"', W / 2, H / 2 + 70);
             ctx.textAlign = 'left';
         }
     }
